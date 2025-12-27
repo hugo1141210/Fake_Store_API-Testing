@@ -1,0 +1,503 @@
+PS D:\QA> newman run .\FakeStoreAPI.postman_collection.json `
+>>   -e .\FakeStoreAPI.postman_environment.json `
+>>   --reporters "cli,htmlextra" `
+>>   --reporter-htmlextra-export .\newman-report.html `
+>>   --reporter-htmlextra-title "FakeStoreAPI QA Test Report"
+(node:32272) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+FakeStoreAPI
+
+□ 01_Products
+└ TC-001 | GET /products | Contract
+  GET https://fakestoreapi.com/products [200 OK, 11.32kB, 1016ms]
+  √  Status code is 200
+  √  Response is a non-empty array
+  √  Product schema contains required fields
+
+└ TC-002 | GET /products | Behavior
+  GET https://fakestoreapi.com/products [200 OK, 11.32kB, 250ms]
+  √  All items have numeric id and price
+  √  Category field is consistently string
+
+└ TC-003 | GET /products | ErrorHandling
+  GET https://fakestoreapi.com/products?limit=abc [200 OK, 11.32kB, 246ms]
+  √  Status code is returned
+  √  Response is parsable
+
+└ TC-004 | POST /products | Contract
+  POST https://fakestoreapi.com/products [201 Created, 811B, 245ms]
+  √  Status code is 201 (Created)
+  √  Response is JSON
+  √  Response contains required product fields
+  √  Field types are correct
+  ┌
+  │ 'Saved env productId =', '21'
+  └
+
+└ TC-005 | POST /products | Behavior
+  POST https://fakestoreapi.com/products [201 Created, 813B, 245ms]
+  √  Status code is 200 or 201
+  √  Response body is not empty
+  √  Response body is valid JSON
+  √  Behavior: required fields exist (id/title/price/category/image)
+  √  Behavior: id is number or string
+  √  Behavior: title is string
+  √  Behavior: price is number or string
+  √  Behavior: category is string
+  √  Behavior: image is string (url-like allowed)
+  ┌
+  │ 'Saved env productId =', '21'
+  └
+
+└ TC-006 | POST /products | ErrorHandling
+  POST https://fakestoreapi.com/products [201 Created, 651B, 242ms]
+  √  [TC-006] Status code should be observable
+  √  [TC-006] Response body handling is safe
+
+└ TC-007 | GET /products/{id} | Contract
+  GET https://fakestoreapi.com/products/21 [200 OK, 629B, 239ms]
+  √  Status code is 200
+  √  Response is safe to consume
+  √  Product schema is valid if body exists
+
+└ TC-008 | GET /products/{id} | behavior
+  GET https://fakestoreapi.com/products/21 [200 OK, 627B, 240ms]
+  √  Status code is 200
+  √  Response body is not empty (or document if empty)
+  √  Response is JSON if body exists
+  √  Behavior fields are returned (if JSON exists)
+  ┌
+  │ 'TC-008 status:', 200
+  │ 'TC-008 hasBody:', false
+  │ 'TC-008 raw length:', 0
+  └
+
+└ TC-009 | GET /products/{invalidId} | ErrorHandling
+  GET https://fakestoreapi.com/products/999999 [200 OK, 633B, 240ms]
+  √  Status code is returned
+  ┌
+  │ 'TC-009 status:', 200
+  │ 'TC-009 invalidProductId:', '999999'
+  │ 'TC-009 hasBody:', ''
+  │ 'TC-009 rawLength:', 0
+  └
+  √  Response body is either empty or parsable
+  ┌
+  │ 'TC-009 classify:', '{"isTypicalClientError":false,"is200Empty":true,"is200Json":"","isServerError":false}'
+  └
+  √  Documented error-handling behavior is observed
+
+└ TC-010 | PUT /products/{id} | Contract
+  PUT https://fakestoreapi.com/products/21 [200 OK, 826B, 243ms]
+  √  [TC-010] Status code should be observable
+  √  [TC-010] Response should be valid JSON object
+  √  [TC-010] Response should match product schema (basic fields)
+
+└ TC-011 | PUT /products/{id} | Behavior
+  GET https://fakestoreapi.com/products/21 [200 OK, 629B, 242ms]
+  √  [TC-011] Status code should be observable
+  √  [TC-011] Update behavior observed (not enforced)
+
+└ TC-012 | PUT /products/{id} | ErrorHandling
+  GET https://fakestoreapi.com/products/999999 [200 OK, 627B, 242ms]
+  √  [TC-012] Status code should be observable
+  √  [TC-012] Response safely handled
+
+└ TC-013 | DELETE /products/{id} | Contract
+  DELETE https://fakestoreapi.com/products/21 [200 OK, 635B, 243ms]
+  √  [TC-013] Status code should be 200 (contract)
+  √  [TC-013] Response body is safely consumable (no crash)
+  √  [TC-013] Contract: empty body is acceptable for DELETE
+  √  [TC-013] Contract: if Content-Type is JSON and has body, JSON must parse
+
+└ TC-014 | DELETE /products/{id} | Behavior
+  DELETE https://fakestoreapi.com/products/21 [200 OK, 635B, 242ms]
+  √  [TC-014] Status code should be 200
+  √  [TC-014] Response is safely consumable (no crash)
+  √  [TC-014] Empty or non-JSON body is acceptable; record as observation
+
+└ TC-015 | DELETE /products/{id} | ErrorHandling
+  DELETE https://fakestoreapi.com/products/999999 [200 OK, 629B, 248ms]
+  √  [TC-015] Status code is observable (not crashing)
+  √  [TC-015] Response is safely consumable
+  √  [TC-015] Empty or non-JSON body is acceptable for error case
+
+└ TC-016 | GET /products/categories | Contract
+  GET https://fakestoreapi.com/products/categories [200 OK, 735B, 242ms]
+  √  [TC-016] Status code should be 200
+  √  [TC-016] Response body should not be empty
+  √  [TC-016] Response should be valid JSON array
+  √  [TC-016] Array items should be strings
+
+└ TC-017 | GET /products?limit={{limit}} | Behavior
+  GET https://fakestoreapi.com/products?limit=5 [200 OK, 2.99kB, 243ms]
+  √  [TC-017] Status code should be 200
+  √  [TC-017] Response body should not be empty
+  √  [TC-017] Response should be valid JSON array
+  √  [TC-017] Returned count should be observable
+  √  [TC-017] Behavior: limit honored or ignored (record evidence)
+
+└ TC-018 | GET /products?limit={{invalidLimit}} | ErrorHandling
+  GET https://fakestoreapi.com/products?limit=abc [200 OK, 11.31kB, 248ms]
+  √  [TC-018] Status code should be observable (200 expected)
+  √  [TC-018] Response body should not be empty
+  √  [TC-018] Response should be valid JSON array
+  √  [TC-018] Invalid limit behavior recorded
+
+└ TC-019 | GET /products?limit=0 | ErrorHandling
+  GET https://fakestoreapi.com/products?sort=desc [200 OK, 11.31kB, 248ms]
+  √  [TC-019] Status code should be observable
+  √  [TC-019] Response body should not be empty
+  √  [TC-019] Response should be valid JSON array
+  √  [TC-019] limit=0 behavior recorded
+
+└ TC-020 | GET /products?sort={{sort}} | Behavior
+  GET https://fakestoreapi.com/products?sort=desc [200 OK, 11.32kB, 249ms]
+  √  [TC-020] Status code should be 200
+  √  [TC-020] Response should be valid JSON array
+  √  [TC-020] Sorting order should match sort parameter
+
+└ TC-021 | GET /products?sort={{invalidSort}} | ErrorHandling
+  GET https://fakestoreapi.com/products?sort=foo [200 OK, 11.32kB, 242ms]
+  √  [TC-021] Status code should be observable
+  √  [TC-021] Response should be valid JSON array
+  √  [TC-021] Invalid sort behavior recorded
+
+└ TC-022 | GET /products/categories | Contract
+  GET https://fakestoreapi.com/products/categories [200 OK, 737B, 244ms]
+  √  TC-022 status is 200
+  √  TC-022 response is valid JSON array
+  √  TC-022 all items are strings
+
+└ TC-023 | GET /products/categories | Behavior
+  GET https://fakestoreapi.com/products/categories [200 OK, 731B, 238ms]
+  √  TC-023 status is 200
+  √  TC-023 category list is not empty
+  √  TC-023 no empty string in categories
+
+└ TC-024 | GET /products/categories | ErrorHandling
+  GET https://fakestoreapi.com/products/categories [200 OK, 735B, 242ms]
+  √  TC-024 API responds without server error
+
+└ TC-025 | GET /products/category/{category} | Contract
+  GET https://fakestoreapi.com/products/category/electronics [200 OK, 4.31kB, 241ms]
+
+└ TC-026 | GET /products/category/{category} | Behavior
+  GET https://fakestoreapi.com/products/category/electronics [200 OK, 4.31kB, 245ms]
+  √  [TC-026] All products filtered by category
+
+└ TC-027 | GET /products/category/{category} | ErrorHandling
+  GET https://fakestoreapi.com/products/category/not-a-real-category [200 OK, 678B, 251ms]
+  √  [TC-027] Invalid category handling recorded
+
+□ 02_Carts
+└ TC-028 | GET /carts | Contract
+  GET https://fakestoreapi.com/carts [200 OK, 1.61kB, 347ms]
+  √  [TC-028] Status code should be 200
+  √  [TC-028] Response should be a JSON array
+  √  [TC-028] Cart item schema is valid
+
+└ TC-029 | GET /carts | Behavior
+  GET https://fakestoreapi.com/carts [200 OK, 1.61kB, 352ms]
+  √  [TC-029] Status code should be 200
+  √  [TC-029] Response should be an array
+  √  [TC-029] Cart list should be readable
+
+└ TC-030 | GET /carts | ErrorHandling
+  GET https://fakestoreapi.com/carts [200 OK, 1.61kB, 348ms]
+  √  [TC-030] API should not return 5xx error
+
+└ TC-031 | POST /carts | Contract
+  √  [GUARD] Method must be POST
+  √  [GUARD] URL must include /carts
+  POST https://fakestoreapi.com/carts [201 Created, 760B, 245ms]
+  √  [TC-031] Status should be 200 or 201
+  √  [TC-031] Response should be JSON object with id
+
+└ TC-032 | POST /carts | Behavior
+  POST https://fakestoreapi.com/carts [201 Created, 762B, 244ms]
+  √  [TC-032] Status should be 200 or 201
+  √  [TC-032] Created cart id should exist (behavior)
+  √  [TC-032] If response includes userId, it should match request (non-strict)
+
+└ TC-033 | POST /carts | ErrorHandling
+  POST https://fakestoreapi.com/carts [201 Created, 710B, 244ms]
+  √  [TC-033] Invalid body handling recorded (no 5xx)
+
+└ TC-034 | GET /carts/{id} | Contract
+  GET https://fakestoreapi.com/carts/11 [200 OK, 674B, 347ms]
+  √  [TC-034] Status should be 200
+  √  [TC-034] Response should be JSON object (or record anomaly)
+  √  [TC-034] Contract: should include id, userId, date, products (guarded)
+  √  [TC-034] Contract: products items should include productId & quantity (guarded)
+
+└ TC-035 | GET /carts/{id} | Behavior
+  GET https://fakestoreapi.com/carts/11 [200 OK, 672B, 352ms]
+  √  [TC-035] Status should be 200
+  √  [TC-035] Response should be JSON object (or record anomaly)
+  √  [TC-035] Returned id should match requested cartId (guarded)
+  √  [TC-035] Products should be an array (guarded)
+
+└ TC-036 | GET /carts/{id} | ErrorHandling
+  GET https://fakestoreapi.com/carts/999999 [200 OK, 678B, 343ms]
+  √  [TC-036] Should not return 5xx
+
+└ TC-037 | PUT /carts/{id} | Contract
+  PUT https://fakestoreapi.com/carts/11 [200 OK, 792B, 247ms]
+  √  [TC-037] Status should be 200 or 201 (record evidence if different)
+  √  [TC-037] Response should be JSON object (or record anomaly)
+  √  [TC-037] Contract: should include id, userId, date, products
+  √  [TC-037] Contract: products items should include productId & quantity
+
+└ TC-038 | PUT /carts/{id} | Behavior
+  PUT https://fakestoreapi.com/carts/11 [200 OK, 767B, 244ms]
+  √  [TC-038] Status should be 200 or 201 (record evidence)
+  √  [TC-038] Behavior recorded (do not hard-fail on provider anomaly)
+
+└ TC-039 | PUT /carts/{id} | ErrorHandling
+  PUT https://fakestoreapi.com/carts/11 [200 OK, 733B, 248ms]
+  √  [TC-039] Should not return 5xx
+  √  [TC-039] Invalid update handling recorded
+
+└ TC-040 | DELETE /carts/{id} | Contract
+  DELETE https://fakestoreapi.com/carts/11 [200 OK, 676B, 365ms]
+  √  [TC-040] Status should be 200
+  √  [TC-040] Response should be valid JSON (object or null)
+
+└ TC-041 | DELETE /carts/{id} | Behavior
+  DELETE https://fakestoreapi.com/carts/11 [200 OK, 678B, 346ms]
+  √  [TC-041] Status should be 200
+  √  [TC-041] Delete behavior observed (id echo optional)
+
+└ TC-042 | DELETE /carts/{id} | ErrorHandling
+  DELETE https://fakestoreapi.com/carts/11 [200 OK, 676B, 343ms]
+  √  [TC-042] Should not return 5xx
+  √  [TC-042] Invalid delete behavior recorded
+
+└ TC-043 | GET /carts | Contract (limit)
+  GET https://fakestoreapi.com/carts?limit=5 [200 OK, 1.37kB, 338ms]
+  √  [TC-043] Status should be 200
+  √  [TC-043] Response should be JSON array (or record anomaly)
+  √  [TC-043] Contract: each cart should include id, userId, date, products (guarded)
+
+└ TC-044 | GET /carts | Behavior (limit)
+  GET https://fakestoreapi.com/carts?limit=5 [200 OK, 1.37kB, 346ms]
+  √  [TC-044] Status should be 200
+  √  [TC-044] Returned count recorded (limit may be honored or ignored)
+
+└ TC-045 | GET /carts | ErrorHandling (limit)
+  GET https://fakestoreapi.com/carts?limit=abc [200 OK, 1.61kB, 346ms]
+  √  [TC-045] Should not return 5xx
+  √  [TC-045] Invalid limit behavior recorded
+
+└ TC-046 | GET /carts | Contract (sort)
+  GET https://fakestoreapi.com/carts?sort=asc [200 OK, 1.62kB, 346ms]
+  √  [TC-046] Status should be 200
+  √  [TC-046] Response should be JSON array
+  √  [TC-046] Contract: cart items should include id, userId, date, products (guarded)
+  √  [TC-046] Contract: products should be array and include productId & quantity (guarded)
+
+└ TC-047 | GET /carts | Behavior (sort)
+  GET https://fakestoreapi.com/carts?sort=asc [200 OK, 1.61kB, 344ms]
+  √  [TC-047] Status should be 200
+  √  [TC-047] Response should be JSON array (or record anomaly)
+  √  [TC-047] Verify sort order by id (guarded)
+
+└ TC-048 | GET /carts | ErrorHandling (sort)
+  GET https://fakestoreapi.com/carts?sort=foo [200 OK, 1.61kB, 351ms]
+  √  [TC-048] Should not return 5xx
+  √  [TC-048] Invalid sort behavior recorded (observation-based)
+
+└ TC-049 | GET /carts/user/{userId} | Contract
+  GET https://fakestoreapi.com/carts/user/1 [200 OK, 1kB, 348ms]
+  √  [TC-049] Status should be 200
+  √  [TC-049] Response should be JSON array (or record anomaly)
+  √  [TC-049] Contract: response should be an array (guarded)
+  √  [TC-049] Contract: cart item should include id,userId,date,products (guarded)
+  √  [TC-049] Contract: products items should include productId & quantity (guarded)
+
+└ TC-050 | GET /carts/user/{userId} | Behavior
+  GET https://fakestoreapi.com/carts/user/1 [200 OK, 1.01kB, 344ms]
+  √  [TC-050] Status should be 200
+  √  [TC-050] Response should be JSON array (or record anomaly)
+  √  [TC-050] All returned carts should match requested userId (guarded)
+
+└ TC-051 | GET /carts/user/{userId} | ErrorHandling
+  GET https://fakestoreapi.com/carts/user/999999 [200 OK, 674B, 340ms]
+  √  [TC-051] Should not return 5xx
+  √  [TC-051] Invalid userId behavior recorded (observation-based)
+
+└ TC-052 | GET /carts | Contract (date-range)
+  GET https://fakestoreapi.com/carts?startdate=2020-03-01&enddate=2020-03-10 [200 OK, 1.35kB, 343ms]
+  √  [TC-052] Status should be 200
+  √  [TC-052] Response should be JSON array (or record anomaly)
+  √  [TC-052] Contract: cart item should include id, userId, date, products (guarded)
+  √  [TC-052] Contract: products items include productId & quantity (guarded)
+
+└ TC-053 | GET /carts | Behavior (date-range)
+  GET https://fakestoreapi.com/carts?startdate=2020-03-01&enddate=2020-03-10 [200 OK, 1.35kB, 337ms]
+  √  [TC-053] Status should be 200
+  √  [TC-053] Response should be JSON array (or record anomaly)
+  √  [TC-053] Date range filtering observed (record evidence, do not enforce)
+
+└ TC-054 | GET /carts | ErrorHandling (date-range)
+  GET https://fakestoreapi.com/carts?startdate=abc&enddate=abc [400 Bad Request, 744B, 239ms]
+  √  [TC-054] Should not return 5xx
+  √  [TC-054] Invalid date handling recorded (observation-based)
+
+□ 03_Users
+└ TC-055 | GET /users | Contract
+  GET https://fakestoreapi.com/users [200 OK, 3.67kB, 347ms]
+  √  [TC-055] Status should be 200
+  √  [TC-055] Response should be JSON array (or record anomaly)
+  √  [TC-055] Contract: each user should include basic keys (guarded)
+
+└ TC-056 | GET /users | Behavior
+  GET https://fakestoreapi.com/users [200 OK, 3.66kB, 343ms]
+  √  [TC-056] Status should be 200
+  √  [TC-056] Response should be JSON array (or record anomaly)
+  √  [TC-056] List should be non-empty (observation-based)
+
+└ TC-057 | GET /users | ErrorHandling
+  GET https://fakestoreapi.com/users [200 OK, 3.67kB, 342ms]
+  √  [TC-057] Should not return 5xx
+  √  [TC-057] Error handling behavior recorded (observation-based)
+
+└ TC-058 | POST /users | Contract
+  POST https://fakestoreapi.com/users [201 Created, 655B, 339ms]
+  √  [TC-058] Status should be 200/201 (observation-based)
+  √  [TC-058] Response should be JSON object (or record anomaly)
+  √  [TC-058] Contract: if object, should include id or basic keys (guarded)
+
+└ TC-059 | POST /users | Behavior
+  POST https://fakestoreapi.com/users [201 Created, 652B, 338ms]
+  √  [TC-059] Status should be 200/201
+  √  [TC-059] Behavior recorded: id generated or fields echoed (guarded)
+
+└ TC-060 | POST /users | ErrorHandling
+  POST https://fakestoreapi.com/users [201 Created, 661B, 343ms]
+  √  [TC-060] Should not return 5xx
+  √  [TC-060] Invalid body behavior recorded (observation-based)
+
+└ TC-061 | GET /users/{id} | Contract
+  GET https://fakestoreapi.com/users/1 [200 OK, 964B, 344ms]
+  √  [TC-061] Status should be 200
+  √  [TC-061] Response should be JSON object (or record anomaly)
+  √  [TC-061] Contract: should include basic keys (guarded)
+
+└ TC-062 | GET /users/{id} | Behavior
+  GET https://fakestoreapi.com/users/1 [200 OK, 960B, 339ms]
+  √  [TC-062] Status should be 200
+  √  [TC-062] Response should be JSON (if body exists)
+  √  [TC-062] Returned id should match requested userId (guarded)
+  √  [TC-062] Username/email should be non-empty strings (guarded)
+
+└ TC-063 | GET /users/{id} | ErrorHandling
+  GET https://fakestoreapi.com/users/999999 [200 OK, 672B, 343ms]
+  √  [TC-063] Should not return 5xx
+  √  [TC-063] Invalid id behavior recorded (observation-based)
+
+└ TC-064 | PUT /users/{id} | Contract
+  PUT https://fakestoreapi.com/users/1 [200 OK, 935B, 250ms]
+  √  [TC-064] Status should be 200
+  √  [TC-064] Response should be JSON object (or record anomaly)
+  √  [TC-064] Contract: if object, should include basic user keys (guarded)
+
+└ TC-065 | PUT /users/{id} | Behavior
+  PUT https://fakestoreapi.com/users/1 [200 OK, 929B, 243ms]
+  √  [TC-065] Status should be 200
+  √  [TC-065] Behavior: record whether fields are echoed (observation-based)
+
+└ TC-066 | PUT /users/{id} | ErrorHandling
+  PUT https://fakestoreapi.com/users/999999 [200 OK, 746B, 241ms]
+  √  [TC-066] Should not return 5xx
+  √  [TC-066] Invalid update behavior recorded (observation-based)
+
+└ TC-067 | DELETE /users/{id} | Contract
+  DELETE https://fakestoreapi.com/users/1 [200 OK, 960B, 344ms]
+  √  [TC-067] Status should be 200 or 204 (contract tolerant)
+  √  [TC-067] Response should be valid JSON (object or null) OR empty body
+
+└ TC-068 | DELETE /users/{id} | Behavior
+  DELETE https://fakestoreapi.com/users/1 [200 OK, 964B, 340ms]
+  GET https://fakestoreapi.com/users/1 [200 OK, 960B, 348ms]
+  √  [TC-068] Delete behavior recorded (observation-based)
+
+└ TC-069 | DELETE /users/{id} | ErrorHandling
+  DELETE https://fakestoreapi.com/users/999999 [200 OK, 672B, 343ms]
+  √  [TC-069] Should not return 5xx
+  √  [TC-069] Invalid delete handling recorded (observation-based)
+
+└ TC-070 | GET /users | Contract (limit)
+  GET https://fakestoreapi.com/users?limit=5 [200 OK, 2.16kB, 342ms]
+  √  [TC-070] Status should be 200
+  √  [TC-070] Response should be JSON array (or record anomaly)
+  √  [TC-070] Contract: user basic keys exist (guarded, sample up to 10)
+
+└ TC-071 | GET /users | Behavior (limit)
+  GET https://fakestoreapi.com/users?limit=5 [200 OK, 2.16kB, 342ms]
+  √  [TC-071] Status should be 200
+  √  [TC-071] Response should be JSON array (or record anomaly)
+  √  [TC-071] Returned count should be <= limit (observation-based)
+
+└ TC-072 | GET /users | ErrorHandling (limit)
+  GET https://fakestoreapi.com/users?limit=abc [200 OK, 3.67kB, 350ms]
+  √  [TC-072] Should not return 5xx
+  √  [TC-072] Invalid limit behavior recorded (observation-based)
+
+└ TC-073 | GET /users | Contract (sort)
+  GET https://fakestoreapi.com/users?sort=asc [200 OK, 3.66kB, 367ms]
+  √  [TC-073] Status should be 200
+  √  [TC-073] Response should be JSON array (or record anomaly)
+  √  [TC-073] Contract: each user should include basic keys (guarded)
+
+└ TC-074 | GET /users | Behavior (sort)
+  GET https://fakestoreapi.com/users?sort=asc [200 OK, 3.67kB, 347ms]
+  √  [TC-074] Status should be 200
+  √  [TC-074] Response should be JSON array (or record anomaly)
+  √  [TC-074] Sort order should be correct by id (guarded)
+
+└ TC-075 | GET /users | ErrorHandling (sort)
+  GET https://fakestoreapi.com/users?sort=foo [200 OK, 3.66kB, 344ms]
+  √  [TC-075] Should not return 5xx
+  √  [TC-075] Invalid sort behavior recorded (observation-based)
+
+□ 04_Auth
+└ TC-076 | POST /auth/login | Contract
+  POST https://fakestoreapi.com/auth/login [201 Created, 801B, 335ms]
+  √  [TC-076] Status should be 200 or 201 (tolerant)
+  √  [TC-076] Response should be JSON object (or record anomaly)
+  √  [TC-076] Contract: token should exist if JSON object (guarded)
+
+└ TC-077 | POST /auth/login | Behavior
+  POST https://fakestoreapi.com/auth/login [201 Created, 803B, 345ms]
+  √  [TC-077] Status should be 200 or 201
+  √  [TC-077] Should return token on success (guarded)
+
+└ TC-078 | POST /auth/login | ErrorHandling
+  POST https://fakestoreapi.com/auth/login [401 Unauthorized, 683B, 339ms]
+  √  [TC-078] Should not return 5xx
+  √  [TC-078] Invalid credential behavior recorded (observation-based)
+
+┌─────────────────────────┬─────────────────────┬────────────────────┐
+│                         │            executed │             failed │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              iterations │                   1 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│                requests │                  79 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│            test-scripts │                  78 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│      prerequest-scripts │                   2 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              assertions │                 213 │                  0 │
+├─────────────────────────┴─────────────────────┴────────────────────┤
+│ total run duration: 30.8s                                          │
+├────────────────────────────────────────────────────────────────────┤
+│ total data received: 121.72kB (approx)                             │
+├────────────────────────────────────────────────────────────────────┤
+│ average response time: 307ms [min: 238ms, max: 1016ms, s.d.: 94ms] │
+└────────────────────────────────────────────────────────────────────┘
+PS D:\QA>
